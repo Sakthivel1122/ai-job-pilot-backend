@@ -1,0 +1,84 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+.venv/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# VS Code settings
+.vscode/
+
+# Pytest
+.cache/
+*.cover
+*.pytest_cache/
+
+# MyPy
+.mypy_cache/
+
+# Pydantic cache
+.pdm.lock
+.dmypy.json
+.pyre/
+
+# Logs
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS files
+.DS_Store
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# PyInstaller
+dist/
+build/
+*.spec
+
+# Database and data files
+*.sqlite3
+*.db
+*.db-journal
+*.pid
+
+# Uvicorn logs
+gunicorn.log
+uvicorn.log
+
+# IDEs
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Docker
+*.tar
+*.img
+*.pid
+
+# Node (if using frontend in same repo)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# FastAPI-specific (if using static/media files)
+staticfiles/
+media/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
