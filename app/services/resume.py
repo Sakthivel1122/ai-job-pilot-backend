@@ -5,10 +5,11 @@ from app.utils.pdf import extract_text_from_pdf
 from fastapi.encoders import jsonable_encoder
 from app.models.user import User, Resume, JobApplication
 from bson import ObjectId
+from typing import Optional
 
 async def get_suggestion_for_resume(
     resume: UploadFile = File(...),
-    job_description: str = Form(""),
+    job_description: Optional[str] = Form(""),
     current_user: User = None,
     job_application_id: str = "",
     # file_type: str = ""
@@ -27,7 +28,15 @@ async def get_suggestion_for_resume(
         # Use your existing PDF extractor
         resume_text = await extract_text_from_pdf(resume_bytes)
 
-        result = await get_ai_suggestion_for_resume(resume_text, job_description)
+        if job_description != "":
+            job_description_text = job_description
+        else:
+            # print('getting job_description from db', job_application.job_description)
+            job_description_text = job_application.job_description
+            
+        # print('job_description_text', job_description_text)
+
+        result = await get_ai_suggestion_for_resume(resume_text, job_description_text)
 
         resume = Resume(
             user=current_user.id,

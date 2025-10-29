@@ -62,7 +62,7 @@ async def get_ai_suggestion_for_resume(
 
     # Use your existing AI engine
     ai_engine = AIEngine(
-        model="llama3-70b-8192",
+        model="llama-3.3-70b-versatile",
         temperature=0.1,
         system_prompt=resume_coach_system_prompt
     )

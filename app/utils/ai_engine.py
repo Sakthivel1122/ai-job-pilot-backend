@@ -6,7 +6,7 @@ from langchain_openai import ChatOpenAI
 class AIEngine:
     def __init__(
         self,
-        model: str = "llama3-70b-8192",
+        model: str = "llama-3.3-70b-versatile",
         temperature: float = 0.3,
         system_prompt: str = None
     ):

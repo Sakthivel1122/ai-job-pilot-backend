@@ -20,7 +20,7 @@ async def list_all_users(current_user: dict = Depends(role_required("admin", "us
     return users
 
 @router.post("/api/v1/job-application")
-async def create_update_job_application(
+async def create_update_job_application_api(
     data:JobApplicationRequest,
     current_user: dict = Depends(role_required("user"))
 ):
@@ -41,7 +41,7 @@ async def get_job_application(
 @router.post("/api/v1/upload-resume")
 async def upload_resume(
     resume: UploadFile = File(...),
-    job_description: str = Form(""),
+    job_description: Optional[str] = Form(""),
     job_application_id: str = Form(""),
     # file_type: str = Form(""),
     current_user: dict = Depends(role_required("user"))

@@ -36,7 +36,7 @@ class Resume(TimeStampedDocument):
     file_url: Optional[str] = None
     original_text: Optional[str] = None
     ai_summary: Optional[str] = None
-    ai_score: Optional[str] = None
+    ai_score: Optional[float] = None
     ai_feedback: Optional[str] = None
 
     class Settings:
