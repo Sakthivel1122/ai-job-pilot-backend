@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     MONGODB_URL: str
     QDRANT_DB_URL: str
     QDRANT_DB_PORT: int
+    APP_HOST: str
+    APP_PORT: int
+    APP_ENV: str
 
     class Config:
         env_file = ".env"
