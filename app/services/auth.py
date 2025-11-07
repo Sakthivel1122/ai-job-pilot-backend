@@ -62,3 +62,24 @@ async def login_user(data: LoginRequest):
             }, "User Signup Successful", 200)
     else:
         return response(None, "Invalid Password", 400)
+
+async def refresh_token_service(user: User):
+
+    user_dict = {
+        'id': str(user.id),
+        'username': user.username,
+        'email': user.email,
+        'role': user.role,
+    }
+    
+    try:
+        access_token, refresh_token = generate_tokens(user_dict)
+        return response({
+            'user_data': user_dict,
+            'token': {
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }
+        }, "success", 200)
+    except Exception as e:
+        return response(None, f"Failed to generate token: {str(e)}", 400)
