@@ -27,7 +27,7 @@ class JobApplicationRequest(BaseModel):
     id: Optional[str] = None
     company: str
     role: str
-    location: str
+    location: Optional[str] = None
     application_url: Optional[str] = Field(default=None)
     salary_min: Optional[float] = Field(default=None)
     salary_max: Optional[float] = Field(default=None)
@@ -39,10 +39,10 @@ class JobApplicationResponse(BaseModel):
     id: PydanticObjectId = Field(..., alias="_id")
     company: str
     role: str
-    location: str
+    location: Optional[str] = None
     application_url: Optional[str] = None
-    salary_min: float
-    salary_max: float
+    salary_min: Optional[float] = Field(default=None)
+    salary_max: Optional[float] = Field(default=None)
     status: str
     notes: Optional[str] = None
     job_description: str

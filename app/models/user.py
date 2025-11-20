@@ -19,11 +19,11 @@ class JobApplication(TimeStampedDocument):
     user: PydanticObjectId
     company: str
     role: str
-    location: str
+    location: Optional[str] = None
     application_url: Optional[str] = Field(default=None)
     salary_min: Optional[float] = Field(default=None)
     salary_max: Optional[float] = Field(default=None)
-    status: Literal["applied", "interview_scheduled", "interviewing", "selected", "rejected"] = "applied"
+    status: Literal["applied", "interview_scheduled", "interviewing", "selected", "rejected", "offer_received", "withdrawn"] = "applied"
     notes: Optional[str] = Field(default=None)
     job_description: str = Field(default=None)
 

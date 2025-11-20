@@ -35,7 +35,7 @@ async def get_job_application(
     limit: int = Query(10, ge=1, le=100),
     job_application_id: str = Query(default=None),
 ):
-    result = await get_all_job_application(current_user, status, page, limit)
+    result = await get_all_job_application(user=current_user, page=page, limit=limit, status=status)
     return result
 
 @router.post("/api/v1/upload-resume")

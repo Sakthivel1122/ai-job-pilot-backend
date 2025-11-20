@@ -24,19 +24,29 @@ async def create_update_job_application(data: JobApplicationRequest, user: User)
             res = JobApplicationResponse(**jsonable_encoder(job_application))
             return response(jsonable_encoder(res), "Updated Successfully", 200)
         else:
+             # ----- CREATE -----
             job_data = data.model_dump(exclude_none=True)
-            job_application = JobApplication(**job_data, user=user.id)
-            await job_application.insert()
-            data = jsonable_encoder(job_application)
-            return response(data, "Created Successfully!", 200)
+
+            # ensure user.id is BSON ObjectId
+            job_data["user"] = PydanticObjectId(str(user.id))
+
+            # insert directly using Motor collection
+            collection = JobApplication.get_motor_collection()
+            result = await collection.insert_one(job_data)
+
+            # attach _id for response
+            job_data["_id"] = str(result.inserted_id)
+            job_data["user"] = str(job_data["user"])
+
+            return response(jsonable_encoder(job_data), "Created Successfully!", 200)
     except Exception as e:
-        return response(None, f"Failed to create job application", 400)
+        return response(None, f"Failed to create job application {str(e)}", 400)
 
 async def get_all_job_application(
     user: User,
-    status: Optional[str],
     page: int,
     limit: int,
+    status: Optional[str] = None
 ):
     try:
         filters = [
@@ -69,8 +79,8 @@ async def get_all_job_application(
             'total_records': total_records
         }
         return response(result, "Retrieved Successfully", 200)
-    except Exception:
-        return response(data, "success", 200)
+    except Exception as e:
+        return response(None, f"Error: {str(e)}", 400)
 
 async def get_dashboard_data(current_user: User):
     from app.models.user import JobApplication
