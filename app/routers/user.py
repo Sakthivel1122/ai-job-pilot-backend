@@ -58,3 +58,4 @@ async def upload_resume(
 async def dashboard_data(current_user: dict = Depends(role_required("user"))):
     result = await get_dashboard_data(current_user)
     return result
+
