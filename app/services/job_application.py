@@ -7,6 +7,7 @@ from bson import ObjectId
 from typing import Optional
 from beanie.operators import And
 from math import ceil
+from datetime import datetime
 
 async def create_update_job_application(data: JobApplicationRequest, user: User):
     try:
@@ -21,14 +22,25 @@ async def create_update_job_application(data: JobApplicationRequest, user: User)
                 setattr(job_application, field, value)
             await job_application.save()
 
-            res = JobApplicationResponse(**jsonable_encoder(job_application))
-            return response(jsonable_encoder(res), "Updated Successfully", 200)
+            job_application.updated_at = datetime.utcnow()
+            update_dict = job_application.model_dump(exclude_none=True)
+            collection = JobApplication.get_motor_collection()
+            
+            result = await collection.update_one(
+                {"_id": job_application.id},
+                {"$set": update_dict}
+            )
+            updated_doc = await collection.find_one({"_id": job_application.id})
+            update_dict["_id"] = str(updated_doc["_id"])
+            return response(jsonable_encoder(update_dict), "Updated Successfully", 200)
         else:
              # ----- CREATE -----
             job_data = data.model_dump(exclude_none=True)
 
             # ensure user.id is BSON ObjectId
             job_data["user"] = PydanticObjectId(str(user.id))
+            job_data["created_at"] = datetime.utcnow()
+            job_data["updated_at"] = datetime.utcnow()
 
             # insert directly using Motor collection
             collection = JobApplication.get_motor_collection()
