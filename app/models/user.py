@@ -41,3 +41,4 @@ class Resume(TimeStampedDocument):
 
     class Settings:
         name = "resumes"
+
