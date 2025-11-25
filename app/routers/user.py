@@ -8,7 +8,7 @@ from app.schemas.user import SignupRequest
 from app.dependencies.auth import get_current_user, role_required
 from app.services.auth import create_user
 from app.schemas.user import JobApplicationRequest, JobApplicationResponse, JobApplicationResponse, DashboardResponse, BaseResponse
-from app.services.job_application import create_update_job_application, get_all_job_application, get_dashboard_data
+from app.services.job_application import create_update_job_application, get_all_job_application, get_dashboard_data, delete_job_application
 from app.services.resume import get_suggestion_for_resume
 
 router = APIRouter()
@@ -25,6 +25,14 @@ async def create_update_job_application_api(
     current_user: dict = Depends(role_required("user"))
 ):
     result = await create_update_job_application(data, current_user)
+    return result
+
+@router.delete("/api/v1/job-application")
+async def delete_job_application_api(
+    id: str,
+    current_user: dict = Depends(role_required("user"))
+):
+    result = await delete_job_application(id, current_user)
     return result
 
 @router.get("/api/v1/job-application", response_model=BaseResponse[List[JobApplicationResponse]])

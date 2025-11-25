@@ -20,7 +20,7 @@ async def create_update_job_application(data: JobApplicationRequest, user: User)
             update_data = data.model_dump(exclude_none=True, exclude={"id"})
             for field, value in update_data.items():
                 setattr(job_application, field, value)
-            await job_application.save()
+            # await job_application.save()
 
             job_application.updated_at = datetime.utcnow()
             update_dict = job_application.model_dump(exclude_none=True)
@@ -129,11 +129,11 @@ async def get_dashboard_data(current_user: User):
         "deleted_at": None
     }).count()
 
-    offers = await JobApplication.find(
-        JobApplication.user == user_id,
-        JobApplication.status == "selected",
-        JobApplication.deleted_at == None
-    ).count()
+    offers = await JobApplication.find({
+        "user": user_id,
+        "status": {"$in": ["selected", "offer_received"]},
+        "deleted_at": None
+    }).count()
 
     data = {
         "total_application_count": total,
@@ -143,3 +143,20 @@ async def get_dashboard_data(current_user: User):
     }
 
     return response(data, "Dashboard data fetched", 200)
+
+async def delete_job_application(id: str, current_user: User):
+    job_application = await JobApplication.find_one(JobApplication.id == PydanticObjectId(id), JobApplication.deleted_at == None)
+
+    if not job_application:
+        return response(None, "Job Application Not Found", 400)
+    
+    job_application.deleted_at = datetime.utcnow()
+    update_dict = job_application.model_dump(exclude_none=True)
+    collection = JobApplication.get_motor_collection()
+    result = await collection.update_one(
+        {"_id": job_application.id},
+        {"$set": update_dict}
+    )
+    # updated_doc = await collection.find_one({"_id": job_application.id})
+    # update_dict["_id"] = str(updated_doc["_id"])
+    return response(None, "Aplication Deleted Successfully!", 200)
