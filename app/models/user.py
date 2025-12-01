@@ -32,6 +32,7 @@ class JobApplication(TimeStampedDocument):
 
 class Resume(TimeStampedDocument):
     user: PydanticObjectId
+    name: str
     job_application: PydanticObjectId
     file_url: Optional[str] = None
     original_text: Optional[str] = None

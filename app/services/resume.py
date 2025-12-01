@@ -6,12 +6,14 @@ from fastapi.encoders import jsonable_encoder
 from app.models.user import User, Resume, JobApplication
 from bson import ObjectId
 from typing import Optional
+from beanie import PydanticObjectId
 
 async def get_suggestion_for_resume(
     resume: UploadFile = File(...),
     job_description: Optional[str] = Form(""),
     current_user: User = None,
     job_application_id: str = "",
+    resume_name: str = Form("")
     # file_type: str = ""
 ):
     try:
@@ -40,6 +42,7 @@ async def get_suggestion_for_resume(
 
         resume = Resume(
             user=current_user.id,
+            name=resume_name,
             job_application=job_application.id,
             original_text=resume_text,
             ai_summary=result.get("summary"),
@@ -49,6 +52,12 @@ async def get_suggestion_for_resume(
         )
         await resume.insert()
         
-        return response(result, "success", 200)
+        return response(result, "Resume Uploaded Successfully!", 200)
     except Exception as e:
         return response({'error': str(e)}, "API Failed", 400)
+
+async def get_job_application_resumes(job_application_id: str, ):
+    resumes = await Resume.find(
+        Resume.job_application == PydanticObjectId(job_application_id)
+    ).sort("-created_at").limit(5).to_list()
+    return resumes

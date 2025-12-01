@@ -1,6 +1,6 @@
 from app.schemas.user import JobApplicationRequest, JobApplicationResponse
 from app.utils.response import response
-from app.models.user import JobApplication, User
+from app.models.user import JobApplication, User, Resume
 from fastapi.encoders import jsonable_encoder
 from beanie import PydanticObjectId
 from bson import ObjectId
@@ -159,4 +159,21 @@ async def delete_job_application(id: str, current_user: User):
     )
     # updated_doc = await collection.find_one({"_id": job_application.id})
     # update_dict["_id"] = str(updated_doc["_id"])
-    return response(None, "Aplication Deleted Successfully!", 200)
+    return response(None, "Job Application Deleted Successfully!", 200)
+
+async def get_job_application_details(id: str, current_user: User):
+    job_application = await JobApplication.find_one(
+        JobApplication.user == PydanticObjectId(current_user.id),
+        JobApplication.id == PydanticObjectId(id)
+    )
+    if not job_application:
+        return response(None, "Job Application Not found", 400)
+    
+    job_dict = job_application.model_dump()  # by_alias maps id/_id
+    job_dict["id"] = str(job_dict["id"])
+    job_dict.pop('user', None)
+
+    resumes = await Resume.find(Resume.job_application == PydanticObjectId(id)).sort("-created_at").limit(5).to_list()
+    job_dict["resumes"] = resumes
+
+    return response(jsonable_encoder(job_dict), "Job Application Details Retrieved Successfully!", 200)

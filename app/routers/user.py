@@ -9,7 +9,6 @@ from app.dependencies.auth import get_current_user, role_required
 from app.services.auth import create_user
 from app.schemas.user import JobApplicationRequest, JobApplicationResponse, JobApplicationResponse, DashboardResponse, BaseResponse
 from app.services.job_application import create_update_job_application, get_all_job_application, get_dashboard_data, delete_job_application
-from app.services.resume import get_suggestion_for_resume
 
 router = APIRouter()
 
@@ -46,21 +45,6 @@ async def get_job_application(
     result = await get_all_job_application(user=current_user, page=page, limit=limit, status=status)
     return result
 
-@router.post("/api/v1/upload-resume")
-async def upload_resume(
-    resume: UploadFile = File(...),
-    job_description: Optional[str] = Form(""),
-    job_application_id: str = Form(""),
-    # file_type: str = Form(""),
-    current_user: dict = Depends(role_required("user"))
-):
-    result = await get_suggestion_for_resume(
-        resume, 
-        job_description, 
-        current_user, 
-        job_application_id, 
-    )
-    return result
 
 @router.get("/api/v1/dashboard", response_model = BaseResponse[DashboardResponse])
 async def dashboard_data(current_user: dict = Depends(role_required("user"))):
