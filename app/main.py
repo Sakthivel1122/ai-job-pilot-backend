@@ -13,8 +13,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()  # Connect to MongoDB + init Beanie
-    yield
+    client = await init_db()  # client returned from init_db
+    try:
+        yield  # App runs here
+    finally:
+        client.close()  # Proper cleanup on shutdown
 
 app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 

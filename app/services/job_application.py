@@ -8,6 +8,8 @@ from typing import Optional
 from beanie.operators import And
 from math import ceil
 from datetime import datetime
+from beanie.operators import And, Or
+import re
 
 async def create_update_job_application(data: JobApplicationRequest, user: User):
     try:
@@ -58,7 +60,8 @@ async def get_all_job_application(
     user: User,
     page: int,
     limit: int,
-    status: Optional[str] = None
+    application_status: Optional[str] = "all",
+    search_text: Optional[str] = None
 ):
     try:
         filters = [
@@ -66,8 +69,19 @@ async def get_all_job_application(
             JobApplication.deleted_at == None
         ]
 
-        if status:
-            filters.append(JobApplication.status == status)
+        # Status filter
+        if application_status and application_status != "all":
+            filters.append(JobApplication.status == application_status)
+
+        # Search filter (company OR location OR role)
+        if search_text and search_text != "":
+            filters.append(
+                Or(
+                    {"company": {"$regex": search_text, "$options": "i"}},
+                    {"role": {"$regex": search_text, "$options": "i"}},
+                    {"location": {"$regex": search_text, "$options": "i"}},
+                )
+            )
 
         skip = (page - 1) * limit
 
@@ -77,7 +91,7 @@ async def get_all_job_application(
 
         job_applications = (
             await query
-            .sort("-created_at")
+            .sort("-updated_at")
             .project(JobApplicationResponse)
             .skip(skip)
             .limit(limit)
@@ -86,9 +100,9 @@ async def get_all_job_application(
         data = jsonable_encoder(job_applications)
 
         result = {
-            'data': data,
-            'current_page_no': page,
-            'total_records': total_records
+            "data": data,
+            "current_page_no": page,
+            "total_records": total_records
         }
         return response(result, "Retrieved Successfully", 200)
     except Exception as e:

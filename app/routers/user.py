@@ -1,13 +1,8 @@
-from fastapi import APIRouter, HTTPException, status, Depends, UploadFile, File, Form, Query
+from fastapi import APIRouter, Depends
 from app.models.user import User
-from typing import List, Optional
-from app.utils.response import response
-from app.utils.hash import encrypt_password
-from app.utils.jwt import generate_tokens
-from app.schemas.user import SignupRequest
-from app.dependencies.auth import get_current_user, role_required
-from app.services.auth import create_user
-from app.schemas.user import JobApplicationRequest, JobApplicationResponse, JobApplicationResponse, DashboardResponse, BaseResponse
+from typing import List
+from app.dependencies.auth import role_required
+from app.schemas.user import JobApplicationRequest, DashboardResponse, BaseResponse
 from app.services.job_application import create_update_job_application, get_all_job_application, get_dashboard_data, delete_job_application
 
 router = APIRouter()
@@ -32,17 +27,6 @@ async def delete_job_application_api(
     current_user: dict = Depends(role_required("user"))
 ):
     result = await delete_job_application(id, current_user)
-    return result
-
-@router.get("/api/v1/job-application", response_model=BaseResponse[List[JobApplicationResponse]])
-async def get_job_application(
-    current_user: dict = Depends(role_required("user")),
-    status: Optional[str] = Query(None, description="Filter by job status"),
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=100),
-    job_application_id: str = Query(default=None),
-):
-    result = await get_all_job_application(user=current_user, page=page, limit=limit, status=status)
     return result
 
 
