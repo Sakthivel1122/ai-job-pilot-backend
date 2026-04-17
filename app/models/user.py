@@ -3,6 +3,7 @@ from pydantic import EmailStr, Field, HttpUrl
 from typing import Optional, Literal
 from .timestamped import TimeStampedDocument
 from datetime import datetime
+from app.constants.job_application import JobApplicationStatus
 
 class User(TimeStampedDocument):
     username: str = Field(..., max_length=100)
@@ -23,7 +24,7 @@ class JobApplication(TimeStampedDocument):
     application_url: Optional[str] = Field(default=None)
     salary_min: Optional[float] = Field(default=None)
     salary_max: Optional[float] = Field(default=None)
-    status: Literal["applied", "interview_scheduled", "interviewing", "selected", "rejected", "offer_received", "withdrawn"] = "applied"
+    status: JobApplicationStatus = "applied"
     notes: Optional[str] = Field(default=None)
     job_description: str = Field(default=None)
 

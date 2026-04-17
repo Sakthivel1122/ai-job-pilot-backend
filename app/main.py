@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
-from app.routers import user, auth, ai_engine, personal_chat_bot, job_application, resume
+from app.routers import user, auth, ai_engine, personal_chat_bot, job_application, resume, admin
 from app.config import settings
 from app.db.init import init_db
 from contextlib import asynccontextmanager
@@ -62,3 +62,4 @@ app.include_router(ai_engine.router, prefix="/ai-engine", tags=["AI Engine"])
 app.include_router(personal_chat_bot.router, prefix="/personal-chat-bot", tags=["Personal Chat Bot"])
 app.include_router(job_application.router, prefix="/job-application", tags=["Job Application APIs"])
 app.include_router(resume.router, prefix="/resume", tags=["Resume APIs"])
+app.include_router(admin.router, prefix="/admin", tags=["Admin APIs"])
