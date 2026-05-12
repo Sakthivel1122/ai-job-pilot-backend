@@ -7,7 +7,7 @@ from typing import Optional
 
 router = APIRouter()
 
-@router.get("/dashboard", response_model=List[User], description="HII")
+@router.get("/api/v1/dashboard", response_model=List[User], description="HII")
 async def admin_dashboard_api(current_user: dict = Depends(role_required("admin"))):
     response = await admin_dashboard_api_service()
     return response
